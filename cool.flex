@@ -46,6 +46,13 @@ extern YYSTYPE cool_yylval;
  *  Add Your own definitions here
  */
 
+/*
+* Variable that helps to ideintify if a comment has begun and needs a end.
+* Help identifies if there is a *) without a (*
+*/
+
+int comm=0;
+
 %}
 
 /*
@@ -133,6 +140,19 @@ objects		[a-z][a-zA-Z0-9_]*
 
 INVALID		"`"|"!"|"#"|"$"|"%"|"^"|"&"|"_"|"["|"]"|"|"|[\\]|">"|"?"
 
+
+/*
+* Definition of whitespaces
+*/
+
+whitespace	[ \f\r\t\v]
+
+
+/*
+ * State Definitions
+ */
+%x comment string escape
+
 %%
 
  /*
@@ -217,11 +237,108 @@ INVALID		"`"|"!"|"#"|"$"|"%"|"^"|"&"|"_"|"["|"]"|"|"|[\\]|">"|"?"
 
 
  /*
+  * All Comments handled here
+  */
+
+"--"(.)*
+
+"*)"			{
+				cool_yylval.error_msg = "Unmatched *)";
+				return ERROR;
+			}
+"(*"			{
+				++comm;
+				BEGIN(comment);
+			}
+
+<comment>"(*"		++comm;
+<comment>"*)"		{
+				--comm;
+				if(comm==0)
+					BEGIN(INITIAL);
+				else if(comm<0){
+					cool_yylval.error_msg = "Unmatched *)";
+					comm=0;
+					BEGIN(INITIAL);
+					return ERROR;
+				}
+			}
+<comment>\n		++curr_lineno;
+<comment>.
+<comment>{whitespace}+
+<comment><<EOF>>	{
+				BEGIN(INITIAL);
+				if(comm>0){
+					cool_yylval.error_msg = "EOF in comment.";
+					comm=0;
+					return ERROR;
+				}
+			}
+
+
+ /*
   *  String constants (C syntax)
-  *  Escape sequence \c is accepted for all characters c. Except for 
+  *  Escape sequence \c is accepted for all characters c. Except for
   *  \n \t \b \f, the result is c.
   *
   */
+"\""			{
+				BEGIN(string);
+				string_buf_ptr = string_buf;
+			}
+
+<string>"\""		{
+				if(string_buf_ptr - string_buf > MAX_STR_CONST-1){
+					*string_buf = '\0';
+					cool_yylval.error_msg = "String constant too long";
+					BEGIN(escape);
+					return ERROR;
+				}
+				*string_buf_ptr = '\0';
+				cool_yylval.symbol = stringtable.add_string(string_buf);
+				BEGIN(INITIAL);
+				return STR_CONST;
+			}
+<string><<EOF>>		{
+				cool_yylval.error_msg = "EOF in string constant";
+				BEGIN(INITIAL);
+				return ERROR;
+			}
+<string>\0		{
+				*string_buf = '\0';
+				cool_yylval.error_msg = "String contains null character";
+				BEGIN(escape);
+				return ERROR;
+			}
+<string>\n		{
+				*string_buf = '\0';
+				BEGIN(INITIAL);
+				cool_yylval.error_msg = "Unterminated string constant";
+				return ERROR;
+			}
+<string>"\\n"		*string_buf_ptr++ = '\n';
+<string>"\\t"		*string_buf_ptr++ = '\t';
+<string>"\\b"		*string_buf_ptr++ = '\b';
+<string>"\\f"		*string_buf_ptr++ = '\f';
+<string>"\\"[^\0]	*string_buf_ptr++ = yytext[1];
+<string>.		*string_buf_ptr++ = *yytext;
+
+<escape>[\n|"]		BEGIN(INITIAL);
+<escape>[^\n|"]
+
+ /*
+  * Skip all Whitespace characters
+  */
+\n		curr_lineno++;
+{whitespace}+
+
+ /*
+  * When nothing matches report error text
+  */
+.		{
+			cool_yylval.error_msg = yytext;
+			return ERROR;
+		}
 
 
 %%

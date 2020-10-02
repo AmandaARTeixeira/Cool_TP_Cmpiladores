@@ -125,4 +125,13 @@ Instructions
 
 Write-up for PA2
 ----------------
+Primeiramente definimos as expressões regulares de cada simbulo da linguagem. Essa definição se encontra abaixo do comentário "Define names for regular expressions here" e foi feita de acordo com o manual do lexer.
+
+Depois criamos as funções para criar a tabela de simbulos. A decisão da montagem de cada função está abaixo.
+
+Para os identificadores reservados, tais como os operadores mutiplos e simples e os identificadores IF, ELSE e assim em diante, apenas retornamos o TOKEN que representa aquele identificador.
+
+Para os boleanos, ints, types e objects retornamos o TOKEN que os define, por exemplo, para o int seria INT_CONST, e armazenamos o valor desse tipo na tabela de simbulos.
+
+Criamos também uma expressão regular para caractéres que não estão na gramática, chamados de INVALID, e caso exista um desses caracteres retornamos o TOKEN ERRO e armazenamos o caractere invalido na tabela de simbulos. 
 
