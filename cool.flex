@@ -61,33 +61,77 @@ ASSIGN          <-
 LE              <=
 
 /*
+* Definition of single-character operators.
+*/
+
+SINGLES		"+"|"-"|"*"|"/"|"~"|"<"|"="|"("|")"|"{"|"}"|";"|":"|"."|","|"@"
+
+/*
 * Definition of case insensitive identifiers.
 */
 
-IF              (?i:if)
-ELSE            (?i:else)
-FI              (?i:fi)
-CLASS           (?i:class)
-IN              (?i:in)
-INHERITS        (?i:inherits)
-LET             (?i:let)
-LOOP            (?i:loop)
-POOL            (?i:pool)
-THEN            (?i:then)
-WHILE           (?i:while)
-CASE            (?i:case)
-ESAC            (?i:esac)
-OF              (?i:of)
-NEW             (?i:new)
-ISVOID          (?i:isvoid)
-NOT             (?i:not)
+IF              [iI][fF]
+ELSE            [eE][lL][sS][eE]
+FI              [fF][iI]
+CLASS           [cC][lL][aA][sS]
+IN              [iI][nN]
+INHERITS        [iI][nN][hH][eE][rR][iI][tT][sS]
+LET             [lL][eE][tT]
+LOOP            [lL][oO][[oO][pP]
+POOL            [pP][oO][oO][lL]
+THEN            [tT][hH][eE][nN]
+WHILE           [wW][hH][iI][lL][eE]
+CASE            [cC][aA][sS][eE]
+ESAC            [eE][sS][aA][cC]
+OF              [oO][fF]
+NEW             [nN][eE][wW]
+ISVOID          [iI][sS][vV][oO][iI][dD]
+NOT             [nN][oO][tT]
+
+/*
+*IF              (?i:if)
+*ELSE            (?i:else)
+*FI              (?:fi)
+*CLASS           (?:class)
+*IN              (?i:in)
+*INHERITS        (?i:inherits)
+*LET             (?i:let)
+*LOOP            (?i:loop)
+*POOL            (?i:pool)
+*THEN            (?i:then)
+*WHILE           (?i:while)
+*CASE            (?i:case)
+*ESAC            (?i:esac)
+*OF              (?i:of)
+*NEW             (?i:new)
+*ISVOID          (?i:isvoid)
+*NOT             (?i:not)
+
+*TRUE            (t)(?i:rue)
+*FALSE           (f)(?i:alse)
+*/
 
 
 /*
 * Definition of true and false (case sensitive)
 */
-TRUE            (t)(?i:rue)
-FALSE           (f)(?i:alse)
+TRUE            (t)[rR][uU][eE]
+FALSE           (f)[aA][lL][sS][eE]
+
+
+/*
+* Definition of types
+*/
+
+ints		[0-9]+
+types		[A-Z][a-zA-Z0-9_]*
+objects		[a-z][a-zA-Z0-9_]*
+
+/*
+* Definition od invalid caracters
+*/
+
+INVALID		"`"|"!"|"#"|"$"|"%"|"^"|"&"|"_"|"["|"]"|"|"|[\\]|">"|"?"
 
 %%
 
@@ -100,7 +144,7 @@ FALSE           (f)(?i:alse)
 
  
  /*
-  * Identifiers case insensite
+  * Identifiers case insensitive
   */
 
 {IF}            return IF;
@@ -113,25 +157,61 @@ FALSE           (f)(?i:alse)
 {LOOP}          return LOOP;
 {POOL}          return POOL;
 {THEN}          return THEN;
-{WHILE          return WHILE;
+{WHILE}         return WHILE;
 {CASE}          return CASE;
 {ESAC}          return ESAC;
 {OF}            return OF;
 {NEW}           return NEW;
-{ISVOI          return ISVOID;
+{ISVOID}        return ISVOID;
 {NOT}           return NOT;
 
 
  /*
  * Bool identifiers
  */
-{TRUE}      {
-            cool_yylval.boolean = true;
+{TRUE}         {
+                cool_yylval.boolean = true;
 				return BOOL_CONST;
-        }
-{FALSE}     {
+            }
+
+
+{FALSE}         {
 				cool_yylval.boolean = false;
 				return BOOL_CONST;
+			}
+
+ /*
+  * Identifiers for Ints, Types and Objects
+  */
+
+{ints}			{
+				cool_yylval.symbol = inttable.add_string(yytext);
+				return INT_CONST;
+			}
+
+
+{types}			{
+				cool_yylval.symbol = idtable.add_string(yytext);
+				return TYPEID;
+			}
+
+
+{objects}|(self)	{
+				cool_yylval.symbol = idtable.add_string(yytext);
+				return OBJECTID;
+			}
+
+ /*
+  * Single Character Special Syntactic Symbols
+  */
+{SINGLES}		return int(yytext[0]);
+
+ /*
+  * Single Invalid Characters
+  */
+{INVALID}		{
+				cool_yylval.error_msg = yytext;
+				return ERROR;
 			}
 
 
