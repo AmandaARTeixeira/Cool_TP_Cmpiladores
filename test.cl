@@ -90,8 +90,9 @@ class Main {
     -- Testing lexers that does not exist in this grammar
     éçã : void;
 
-    -- Testing invalid strings
-    str : String [ <- "Hello 0 World" ];    
+    -- Testing invalid string
+    str : String [ <- "Hello 
+    World" ];    
    
     main() : SELF_TYPE {
         {
