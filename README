@@ -125,13 +125,44 @@ Instructions
 
 Write-up for PA2
 ----------------
-Primeiramente definimos as expressões regulares de cada simbulo da linguagem. Essa definição se encontra abaixo do comentário "Define names for regular expressions here" e foi feita de acordo com o manual do lexer.
+	Primeiramente definimos as expressões regulares de cada
+	simbulo da linguagem. Essa definição se encontra abaixo 
+	do comentário "Define names for regular expressions here" 
+	e foi feita de acordo com o manual do lexer.
 
-Depois criamos as funções para criar a tabela de simbulos. A decisão da montagem de cada função está abaixo.
+	Depois criamos as funções para criar a tabela de simbulos. 
+	A decisão da montagem de cada função está abaixo:
 
-Para os identificadores reservados, tais como os operadores mutiplos e simples e os identificadores IF, ELSE e assim em diante, apenas retornamos o TOKEN que representa aquele identificador.
+	1 - Para os identificadores reservados, tais como os 
+	operadores mutiplos e simples e os identificadores IF, 
+	ELSE e assim em diante, apenas retornamos o TOKEN que 
+	representa aquele identificador.
 
-Para os boleanos, ints, types e objects retornamos o TOKEN que os define, por exemplo, para o int seria INT_CONST, e armazenamos o valor desse tipo na tabela de simbulos.
+	2 - Para os boleanos, ints, types e objects retornamos 
+	o TOKEN que os define, por exemplo, para o int seria 
+	INT_CONST, e armazenamos o valor desse tipo na tabela 
+	de simbulos.
 
-Criamos também uma expressão regular para caractéres que não estão na gramática, chamados de INVALID, e caso exista um desses caracteres retornamos o TOKEN ERRO e armazenamos o caractere invalido na tabela de simbulos. 
+        3- Criamos também uma expressão regular para caractéres 
+	que não podem iniciar um variável, chamados de INVALID, 
+	e caso algum desses caracteres inicie uma string retornamos 
+	o TOKEN ERRO e armazenamos o caractere invalido na tabela d
+	e simbulos. 
 
+	Depois fizemos as partes dos comentários. Utilizamos uma 
+	variável auxiliar (comm) para saber se um um comentário havia 
+	sido iniciado e deveria ser fechado. Através dela sabemos se 
+	houve um fecha comentários sem um abre comentário ou se chegou 
+	ao final do arquivo sem fechar o comentário (os dois casos são 
+	erros). Também utilizamos uma variável auxiliar cur_lineno para
+	saber quando o comentário iniciado com -- terminou, o que seria 
+	no '\n'.	
+	
+	Depois definimos uma string. Ela é inicializada com " e termina em
+	outro ". Armazenamos seu valor em um buzzer que será posteriormente
+	colocado na tabela de simbulos, caso não haja nenhum erro na string.
+	Utilizamos um ponteiro para apontar para a posição atual do buffer
+	da string, o que ajuda a ver se ela esá correta.
+	
+	Por fim definimos que se a string lida não tiver sido definida
+	em nunhuma das expressões acima então ela é um erro da linguagem.
