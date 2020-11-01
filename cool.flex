@@ -96,30 +96,6 @@ ISVOID          [iI][sS][vV][oO][iI][dD]
 NOT             [nN][oO][tT]
 
 /*
-*IF              (?i:if)
-*ELSE            (?i:else)
-*FI              (?:fi)
-*CLASS           (?:class)
-*IN              (?i:in)
-*INHERITS        (?i:inherits)
-*LET             (?i:let)
-*LOOP            (?i:loop)
-*POOL            (?i:pool)
-*THEN            (?i:then)
-*WHILE           (?i:while)
-*CASE            (?i:case)
-*ESAC            (?i:esac)
-*OF              (?i:of)
-*NEW             (?i:new)
-*ISVOID          (?i:isvoid)
-*NOT             (?i:not)
-
-*TRUE            (t)(?i:rue)
-*FALSE           (f)(?i:alse)
-*/
-
-
-/*
 * Definition of true and false (case sensitive)
 */
 TRUE            (t)[rR][uU][eE]
