@@ -73,13 +73,44 @@ class CellularAutomaton inherits IO {
             }
         ) ) )
     };
+
+    -- Testing true, false and <=
+    isEmpty() : Bool {
+	if num_cells() <= 0 then true else false fi
+    };
 };
 
 class Main {
     cells : CellularAutomaton;
+
+    -- Testing invalid caracters 
+    _invalid_void : Void;
+    &invalid_int : Int;
+    
+    -- Testing lexers that does not exist in this grammar
+    éçã : void;
+
+    -- Testing invalid strings
+    str : String [ <- "Hello 0 World" ];    
    
     main() : SELF_TYPE {
         {
+            -- Testing isVoid
+            if (isVoid cells)
+		then out_string("Cells is void");
+   
+            -- Testing not
+ 	    if(not isVoid str)
+		then out_string("Str is not void");
+
+            -- Testing case
+            case cells.cell_right_neighbor(1) of
+	        a : Int => out_string("is a Int");
+                b : Void => out_string("is Void");
+                c : CellularAutomaton => out_string("is a CellularAutomaton");
+                d : String => out_string("is a String");
+	    esac
+
             cells <- (new CellularAutomaton).init("         X         ");
             cells.print();
             (let countdown : Int <- 20 in
@@ -94,4 +125,5 @@ class Main {
             self;
         }
     };
+
 };
