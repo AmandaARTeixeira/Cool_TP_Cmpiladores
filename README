@@ -154,9 +154,7 @@ Write-up for PA2
 	sido iniciado e deveria ser fechado. Através dela sabemos se 
 	houve um fecha comentários sem um abre comentário ou se chegou 
 	ao final do arquivo sem fechar o comentário (os dois casos são 
-	erros). Também utilizamos uma variável auxiliar cur_lineno para
-	saber quando o comentário iniciado com -- terminou, o que seria 
-	no '\n'.	
+	erros).
 	
 	Depois definimos uma string. Ela é inicializada com " e termina em
 	outro ". Armazenamos seu valor em um buzzer que será posteriormente
